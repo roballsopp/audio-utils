@@ -1,34 +1,32 @@
 describe('wav.js', function () {
-	var wav = require('../lib/wav');
-	describe('decode', function () {
+	var Decoder = require('../lib/wav/Decoder');
+	fdescribe('decode', function () {
 		beforeAll(function (done) {
 			var self = this;
-			wav
-				.decode('test/files/umbrella_beach.wav')
-				.then(function (signal) {
-					self.signal = signal;
+			return Decoder.fromFile(process.cwd() + '/test/files/umbrella_beach.wav')
+				.then(function (decoder) {
+					self.decoder = decoder;
+				})
+				.then(function () {
+					return self.decoder.decode();
 				})
 				.then(done)
 				.catch(done.fail);
 		});
 		it('has two channels', function () {
-			expect(this.signal.channels).toBe(2);
-			expect(this.signal.data.length).toBe(2);
+			expect(this.decoder.channels).toBe(2);
 		});
 
 		it('has a sample rate of 44100', function () {
-			expect(this.signal.sampleRate).toBe(44100);
+			expect(this.decoder.sampleRate).toBe(44100);
 		});
 
 		it('has a bit depth of 16', function () {
-			expect(this.signal.bitDepth).toBe(16);
+			expect(this.decoder.bitDepth).toBe(16);
 		});
 
 		it('has 10268244 samples in each channel', function () {
-			var self = this;
-			self.signal.data.forEach(function (channelData) {
-				expect(channelData.length).toBe(10268244);
-			});
+			expect(this.decoder.sampPerChan).toBe(10268244);
 		});
 	});
 
